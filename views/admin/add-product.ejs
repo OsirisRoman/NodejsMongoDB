@@ -1,0 +1,20 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/add-product-form.css" />
+    <%- include('../includes/navigation.ejs') %>
+      <main>
+      <h1>ADMIN Add Product</h1>
+      <form class="product-form" action="/admin/<%if(editMode){%>edit-product/<%=product.id%><%} else {%>add-product<%}%>" method="POST" id="add-product-form">
+        <div class="form-control">
+          <label for="productname">Product Name</label>
+          <input type="text" name="name" id="productname" <%if(editMode){ %>value="<%=product.name%>"<% } %> />
+          <label for="productimage">Image Url</label>
+          <input type="url" name="imageUrl" id="productimage"  <%if(editMode){ %>value="<%=product.imageUrl%>"<% } %> />
+          <label for="productdescription">Description</label>
+          <textarea Form="add-product-form" rows ="5" name="description" ><%if(editMode){ %><%=product.description%><% } %></textarea>
+          <label for="productPrice">Price</label>
+          <input type="number" name="price" id="productprice" min="0" placeholder="0" step="0.01"  <%if(editMode){ %>value="<%=product.price%>"<% } %> />
+        </div>
+
+        <button type="submit"><%if(editMode){%>Update Product<%} else {%>Add Product<%}%></button>
+      </form>
+      <%- include('../includes/end.ejs') %>
