@@ -9,7 +9,17 @@ const getAddProduct = (req, res, next) => {
 };
 
 const postAddProduct = (req, res) => {
-  res.redirect('/admin/product-list');
+  //all values in req.body are strings
+  //multipliying the price cast it to number
+  req.body.price *= 100;
+
+  const product = new Product(...Object.values(req.body));
+  product
+    .save()
+    .then(result => {
+      res.redirect('/admin/product-list');
+    })
+    .catch(err => console.log(err));
 };
 
 const getEditProduct = (req, res, next) => {

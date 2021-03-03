@@ -1,12 +1,19 @@
 const Product = require('../models/product');
 
 const getProductList = (req, res, next) => {
-  let products = [];
-  res.render('shop/product-list', {
-    productList: products,
-    pageTitle: 'Shop',
-    path: '/product-list',
-  });
+  Product.fetchAll()
+    .then(products => {
+      products.forEach(product => {
+        product.price /= 100;
+      });
+      console.log(products);
+      res.render('shop/product-list', {
+        productList: products,
+        pageTitle: 'Shop',
+        path: '/product-list',
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 const getUserCart = (req, res, next) => {

@@ -6,10 +6,7 @@ const adminRoutes = require('./routes/admin');
 const publicRoutes = require('./routes/shop');
 const errorControler = require('./controllers/error');
 
-const Product = require('./models/product');
-const User = require('./models/user');
-const Cart = require('./models/cart');
-const Order = require('./models/order');
+const { mongoConnect } = require('./utils/database');
 
 const app = express();
 
@@ -27,6 +24,8 @@ app.use(errorControler.get404);
 
 const PORT = 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+mongoConnect(() => {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
 });
