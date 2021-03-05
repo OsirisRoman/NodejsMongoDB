@@ -6,7 +6,6 @@ const getProductList = (req, res, next) => {
       products.forEach(product => {
         product.price /= 100;
       });
-      console.log(products);
       res.render('shop/product-list', {
         productList: products,
         pageTitle: 'Shop',
@@ -66,12 +65,16 @@ const goToHome = (req, res, next) => {
 
 const getProductDetails = (req, res, next) => {
   const productId = req.params.productId;
-  let product = { id: 1, name: '', description: '', imageUrl: '', price: 0 };
-  res.render('shop/product-details', {
-    product: product,
-    pageTitle: product.name,
-    path: '/product-list',
-  });
+  Product.findById(productId)
+    .then(product => {
+      product.price /= 100;
+      res.render('shop/product-details', {
+        product: product,
+        pageTitle: product.name,
+        path: '/product-list',
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 module.exports = {

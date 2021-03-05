@@ -11,12 +11,12 @@ const getAddProduct = (req, res, next) => {
 const postAddProduct = (req, res) => {
   //all values in req.body are strings
   //multipliying the price cast it to number
-  req.body.price *= 100;
+  req.body.price = req.body.price * 10 * 10;
 
   const product = new Product(...Object.values(req.body));
   product
     .save()
-    .then(result => {
+    .then(() => {
       res.redirect('/admin/product-list');
     })
     .catch(err => console.log(err));
@@ -29,32 +29,57 @@ const getEditProduct = (req, res, next) => {
       error handling in the future*/
     return res.redirect('/');
   }
-  let product = { id: 1, name: '', description: '', imageUrl: '', price: 0 };
-  res.render('admin/add-product', {
-    pageTitle: 'Edit Product',
-    path: '/admin/edit-product',
-    editMode: true,
-    product: product,
-  });
+  Product.findById(productId)
+    .then(product => {
+      product.price = product.price / 10 / 10;
+      res.render('admin/add-product', {
+        pageTitle: 'Edit Product',
+        path: '/admin/edit-product',
+        editMode: true,
+        product: product,
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 const postEditProduct = (req, res) => {
   const updatedProduct = req.body;
-  res.redirect('/admin/product-list');
+  updatedProduct.price = updatedProduct.price * 10 * 10;
+  const product = new Product(
+    ...Object.values(updatedProduct),
+    req.params.productId
+  );
+  product
+    .save()
+    .then(result => {
+      //console.log(result);
+      res.redirect('/admin/product-list');
+    })
+    .catch(err => console.log(err));
 };
 
 const postDeleteProduct = (req, res) => {
   const productId = req.body.productId;
-  res.redirect('/admin/product-list');
+  Product.deleteById(productId)
+    .then(() => {
+      res.redirect('/admin/product-list');
+    })
+    .catch(err => console.log(err));
 };
 
 const getProductList = (req, res, next) => {
-  let products = [];
-  res.render('admin/product-list', {
-    productList: products,
-    pageTitle: 'Admin Products',
-    path: '/admin/product-list',
-  });
+  Product.fetchAll()
+    .then(products => {
+      products.forEach(product => {
+        product.price = product.price / 10 / 10;
+      });
+      res.render('admin/product-list', {
+        productList: products,
+        pageTitle: 'Admin Products',
+        path: '/admin/product-list',
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 module.exports = {

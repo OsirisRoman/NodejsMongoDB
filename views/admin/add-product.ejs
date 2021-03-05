@@ -3,7 +3,7 @@
     <%- include('../includes/navigation.ejs') %>
       <main>
       <h1>ADMIN Add Product</h1>
-      <form class="product-form" action="/admin/<%if(editMode){%>edit-product/<%=product.id%><%} else {%>add-product<%}%>" method="POST" id="add-product-form">
+      <form class="product-form" action="/admin/<%if(editMode){%>edit-product/<%=product._id%><%} else {%>add-product<%}%>" method="POST" id="add-product-form">
         <div class="form-control">
           <label for="productname">Product Name</label>
           <input type="text" name="name" id="productname" <%if(editMode){ %>value="<%=product.name%>"<% } %> />
