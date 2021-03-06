@@ -2,7 +2,7 @@ const mongodb = require('mongodb');
 const { getDb } = require('../utils/database');
 
 class Product {
-  constructor(name, imageUrl, description, price, _id) {
+  constructor(name, imageUrl, description, price, userId, _id) {
     //Given that the following line do not work because this
     //reserved word is not recognized as a variable...
     //this = {this, ...{ name, imageUrl, description, price }
@@ -13,6 +13,7 @@ class Product {
       imageUrl,
       description,
       price,
+      userId,
       _id: _id ? new mongodb.ObjectID(_id) : null,
     });
   }
@@ -24,7 +25,6 @@ class Product {
         .collection('products')
         .updateOne({ _id: this._id }, { $set: this });
     } else {
-      console.log(this);
       return db.collection('products').insertOne(this);
     }
   }
@@ -48,8 +48,7 @@ class Product {
 
     return db
       .collection('products')
-      .find({ _id: new mongodb.ObjectID(productId) })
-      .next()
+      .findOne({ _id: new mongodb.ObjectID(productId) })
       .then(product => {
         return product;
       })

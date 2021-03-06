@@ -11,9 +11,9 @@ const getAddProduct = (req, res, next) => {
 const postAddProduct = (req, res) => {
   //all values in req.body are strings
   //multipliying the price cast it to number
-  req.body.price = req.body.price * 10 * 10;
+  req.body.price = Math.round(req.body.price * 100);
 
-  const product = new Product(...Object.values(req.body));
+  const product = new Product(...Object.values(req.body), req.user._id);
   product
     .save()
     .then(() => {
@@ -44,15 +44,15 @@ const getEditProduct = (req, res, next) => {
 
 const postEditProduct = (req, res) => {
   const updatedProduct = req.body;
-  updatedProduct.price = updatedProduct.price * 10 * 10;
+  updatedProduct.price = Math.round(updatedProduct.price * 100);
   const product = new Product(
     ...Object.values(updatedProduct),
+    req.user._id,
     req.params.productId
   );
   product
     .save()
-    .then(result => {
-      //console.log(result);
+    .then(() => {
       res.redirect('/admin/product-list');
     })
     .catch(err => console.log(err));

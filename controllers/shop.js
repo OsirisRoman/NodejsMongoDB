@@ -16,12 +16,13 @@ const getProductList = (req, res, next) => {
 };
 
 const getUserCart = (req, res, next) => {
-  let cartProducts = [];
-  res.render('shop/cart', {
-    pageTitle: 'Your Cart',
-    path: '/cart',
-    products: cartProducts,
-    totalToPay: 0,
+  req.user.getCart().then(cartProducts => {
+    res.render('shop/cart', {
+      pageTitle: 'Your Cart',
+      path: '/cart',
+      products: cartProducts,
+      totalToPay: 0,
+    });
   });
 };
 
@@ -32,7 +33,12 @@ const postDeleteProductFromCart = (req, res, next) => {
 
 const postUserCart = (req, res, next) => {
   const productId = req.body.productId;
-  res.redirect('cart');
+  req.user
+    .addToCart(productId)
+    .then(() => {
+      res.redirect('cart');
+    })
+    .catch(err => console.log(err));
 };
 
 const postUserOrders = (req, res, next) => {
@@ -67,7 +73,7 @@ const getProductDetails = (req, res, next) => {
   const productId = req.params.productId;
   Product.findById(productId)
     .then(product => {
-      product.price /= 100;
+      product.price = product.price / 10 / 10;
       res.render('shop/product-details', {
         product: product,
         pageTitle: product.name,
