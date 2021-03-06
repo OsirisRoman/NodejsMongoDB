@@ -28,7 +28,12 @@ const getUserCart = (req, res, next) => {
 
 const postDeleteProductFromCart = (req, res, next) => {
   const productId = req.body.productId;
-  res.redirect('/cart');
+  req.user
+    .removeFromCart(productId)
+    .then(() => {
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
 };
 
 const postUserCart = (req, res, next) => {
