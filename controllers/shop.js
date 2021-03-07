@@ -4,7 +4,7 @@ const getProductList = (req, res, next) => {
   Product.fetchAll()
     .then(products => {
       products.forEach(product => {
-        product.price /= 100;
+        product.price = (product.price / 100).toFixed(2);
       });
       res.render('shop/product-list', {
         productList: products,
@@ -21,7 +21,11 @@ const getUserCart = (req, res, next) => {
       pageTitle: 'Your Cart',
       path: '/cart',
       products: cartProducts,
-      totalToPay: 0,
+      totalToPay: (
+        cartProducts.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.price * currentValue.quantity;
+        }, 0) / 100
+      ).toFixed(2),
     });
   });
 };
@@ -47,16 +51,24 @@ const postUserCart = (req, res, next) => {
 };
 
 const postUserOrders = (req, res, next) => {
-  res.redirect('/orders');
+  req.user
+    .addOrder()
+    .then(() => {
+      res.redirect('/orders');
+    })
+    .catch(err => console.log(err));
 };
 
 const getUserOrders = (req, res, next) => {
-  let orders = [];
-  res.render('shop/orders', {
-    pageTitle: 'Your Orders',
-    path: '/orders',
-    orders,
-    totalToPay: 0,
+  req.user.getOrders().then(orders => {
+    orders.forEach(order => {
+      order.totalToPay = (order.totalToPay / 100).toFixed(2);
+    });
+    res.render('shop/orders', {
+      pageTitle: 'Your Orders',
+      path: '/orders',
+      orders,
+    });
   });
 };
 
@@ -78,7 +90,7 @@ const getProductDetails = (req, res, next) => {
   const productId = req.params.productId;
   Product.findById(productId)
     .then(product => {
-      product.price = product.price / 10 / 10;
+      product.price = (product.price / 100).toFixed(2);
       res.render('shop/product-details', {
         product: product,
         pageTitle: product.name,

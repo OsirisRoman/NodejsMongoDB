@@ -8,15 +8,15 @@
             <ul>
                 <%orders.forEach(order => {%>
                     <li>
-                        <h1><%= order.id %></h1>
+                        <h1><%= order._id %></h1>
                         <ul>
                             <% order.products.forEach(item => { %>
-                                <li><%= item.name %> (<%= item.orderitem.quantity %>)</li>
+                                <li><%= item.name %> (<%= item.quantity %>)</li>
                             <% }); %>
                         </ul>
                         <hr>
                         <div class="centered">
-                            <h1>Total: $<%=totalToPay%></h1>
+                            <h1>Total: $<%=order.totalToPay%></h1>
                         </div>
                     </li>
                 <%});%>
