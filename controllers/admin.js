@@ -45,11 +45,7 @@ const getEditProduct = (req, res, next) => {
 const postEditProduct = (req, res) => {
   const updatedProduct = req.body;
   updatedProduct.price = Math.round(updatedProduct.price * 100);
-  Product.findById(req.params.productId)
-    .then(product => {
-      Object.assign(product, updatedProduct);
-      return product.save();
-    })
+  Product.findByIdAndUpdate(req.params.productId, updatedProduct)
     .then(() => {
       res.redirect('/admin/product-list');
     })
@@ -58,8 +54,11 @@ const postEditProduct = (req, res) => {
 
 const postDeleteProduct = (req, res) => {
   const productId = req.body.productId;
-
-  res.redirect('/admin/product-list');
+  Product.findByIdAndRemove(productId)
+    .then(() => {
+      res.redirect('/admin/product-list');
+    })
+    .catch(err => console.log(err));
   /* const cartProductIndex = req.user.cart.findIndex(cartProduct => {
     //cartProduct.productId is treated as a string but
     //it is not a string
