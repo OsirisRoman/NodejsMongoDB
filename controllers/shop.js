@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 const getProductList = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       products.forEach(product => {
         product.price = (product.price / 100).toFixed(2);
@@ -16,7 +16,13 @@ const getProductList = (req, res, next) => {
 };
 
 const getUserCart = (req, res, next) => {
-  req.user.getCart().then(cartProducts => {
+  res.render('shop/cart', {
+    pageTitle: 'Your Cart',
+    path: '/cart',
+    products: [],
+    totalToPay: 0,
+  });
+  /* req.user.getCart().then(cartProducts => {
     res.render('shop/cart', {
       pageTitle: 'Your Cart',
       path: '/cart',
@@ -27,40 +33,48 @@ const getUserCart = (req, res, next) => {
         }, 0) / 100
       ).toFixed(2),
     });
-  });
+  }); */
 };
 
 const postDeleteProductFromCart = (req, res, next) => {
   const productId = req.body.productId;
-  req.user
+  res.redirect('/cart');
+  /* req.user
     .removeFromCart(productId)
     .then(() => {
       res.redirect('/cart');
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); */
 };
 
 const postUserCart = (req, res, next) => {
   const productId = req.body.productId;
-  req.user
+  res.redirect('cart');
+  /* req.user
     .addToCart(productId)
     .then(() => {
       res.redirect('cart');
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); */
 };
 
 const postUserOrders = (req, res, next) => {
-  req.user
+  res.redirect('/orders');
+  /* req.user
     .addOrder()
     .then(() => {
       res.redirect('/orders');
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); */
 };
 
 const getUserOrders = (req, res, next) => {
-  req.user.getOrders().then(orders => {
+  res.render('shop/orders', {
+    pageTitle: 'Your Orders',
+    path: '/orders',
+    orders: [],
+  });
+  /* req.user.getOrders().then(orders => {
     orders.forEach(order => {
       order.totalToPay = (order.totalToPay / 100).toFixed(2);
     });
@@ -69,7 +83,7 @@ const getUserOrders = (req, res, next) => {
       path: '/orders',
       orders,
     });
-  });
+  }); */
 };
 
 const goToCheckout = (req, res, next) => {

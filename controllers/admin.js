@@ -12,8 +12,8 @@ const postAddProduct = (req, res) => {
   //all values in req.body are strings
   //multipliying the price cast it to number
   req.body.price = Math.round(req.body.price * 100);
+  const product = new Product(req.body);
 
-  const product = new Product(...Object.values(req.body), req.user._id);
   product
     .save()
     .then(() => {
@@ -25,8 +25,8 @@ const postAddProduct = (req, res) => {
 const getEditProduct = (req, res, next) => {
   const productId = req.params.productId;
   if (!productId) {
-    /*This should be replaced by an 
-      error handling in the future*/
+    //This should be replaced by an
+    //error handling in the future
     return res.redirect('/');
   }
   Product.findById(productId)
@@ -45,13 +45,11 @@ const getEditProduct = (req, res, next) => {
 const postEditProduct = (req, res) => {
   const updatedProduct = req.body;
   updatedProduct.price = Math.round(updatedProduct.price * 100);
-  const product = new Product(
-    ...Object.values(updatedProduct),
-    req.user._id,
-    req.params.productId
-  );
-  product
-    .save()
+  Product.findById(req.params.productId)
+    .then(product => {
+      Object.assign(product, updatedProduct);
+      return product.save();
+    })
     .then(() => {
       res.redirect('/admin/product-list');
     })
@@ -61,7 +59,8 @@ const postEditProduct = (req, res) => {
 const postDeleteProduct = (req, res) => {
   const productId = req.body.productId;
 
-  const cartProductIndex = req.user.cart.findIndex(cartProduct => {
+  res.redirect('/admin/product-list');
+  /* const cartProductIndex = req.user.cart.findIndex(cartProduct => {
     //cartProduct.productId is treated as a string but
     //it is not a string
     return cartProduct.productId.toString() === productId;
@@ -82,11 +81,11 @@ const postDeleteProduct = (req, res) => {
         res.redirect('/admin/product-list');
       })
       .catch(err => console.log(err));
-  }
+  } */
 };
 
 const getProductList = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       products.forEach(product => {
         product.price = (product.price / 100).toFixed(2);

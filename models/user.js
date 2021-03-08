@@ -1,17 +1,17 @@
-const mongodb = require('mongodb');
-const { getDb } = require('../utils/database');
+/* const mongodb = require('mongodb');
+const { getDb } = require('../utils/database'); */
 
 class User {
   constructor(_id, name, email, cart) {
     Object.assign(this, { _id, name, email, cart });
   }
   save() {
-    const db = getDb();
-    return db.collection('users').insertOne(this);
+    /* const db = getDb();
+    return db.collection('users').insertOne(this); */
   }
 
   addToCart(productIdToAdd) {
-    const db = getDb();
+    /* const db = getDb();
     const cartProductIndex = this.cart.findIndex(cartProduct => {
       //cartProduct.productId is treated as a string but
       //it is not a string
@@ -34,10 +34,10 @@ class User {
       .updateOne(
         { _id: new mongodb.ObjectID(this._id) },
         { $set: { cart: updatedCart } }
-      );
+      ); */
   }
   removeFromCart(productIdToRemove) {
-    const db = getDb();
+    /* const db = getDb();
     return db.collection('users').updateOne(
       { _id: new mongodb.ObjectID(this._id) },
       {
@@ -47,11 +47,11 @@ class User {
           ),
         },
       }
-    );
+    ); */
   }
 
   getCart() {
-    const db = getDb();
+    /* const db = getDb();
     return db
       .collection('products')
       .find({
@@ -66,11 +66,11 @@ class User {
           return product;
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err)); */
   }
 
   addOrder() {
-    const db = getDb();
+    /* const db = getDb();
     return this.getCart()
       .then(products => {
         return db.collection('orders').insertOne({
@@ -89,24 +89,24 @@ class User {
             { $set: { cart: [] } }
           );
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err)); */
   }
 
   getOrders() {
-    const db = getDb();
+    /* const db = getDb();
 
     return db
       .collection('orders')
       .find({ user: new mongodb.ObjectID(this._id) })
-      .toArray();
+      .toArray(); */
   }
 
   static findById(userId) {
-    const db = getDb();
+    /* const db = getDb();
 
     return db
       .collection('users')
-      .findOne({ _id: new mongodb.ObjectID(userId) });
+      .findOne({ _id: new mongodb.ObjectID(userId) }); */
   }
 }
 
