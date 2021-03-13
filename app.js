@@ -18,17 +18,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* app.use((req, res, next) => {
-  User.findById('604328827c79c97a2d691a9c')
+app.use((req, res, next) => {
+  User.findById('60496d9ce44dc026f05324e1')
     .then(user => {
-      req.user = new User(...Object.values(user), []);
+      req.user = user;
       next();
     })
     .catch(err => {
       console.log(err);
       next();
     });
-}); */
+});
 
 app.use('/admin', adminRoutes);
 app.use(publicRoutes);
@@ -45,6 +45,17 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
+    return User.findOne();
+  })
+  .then(foundUser => {
+    if (!foundUser) {
+      const user = new User({
+        name: 'Osiris',
+        email: 'osirisr1994@gmail.com',
+        cart: [],
+      });
+      user.save();
+    }
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });

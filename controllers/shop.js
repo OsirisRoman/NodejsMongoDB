@@ -16,29 +16,42 @@ const getProductList = (req, res, next) => {
 };
 
 const getUserCart = (req, res, next) => {
-  res.render('shop/cart', {
-    pageTitle: 'Your Cart',
-    path: '/cart',
-    products: [],
-    totalToPay: 0,
-  });
-  /* req.user.getCart().then(cartProducts => {
-    res.render('shop/cart', {
-      pageTitle: 'Your Cart',
-      path: '/cart',
-      products: cartProducts,
-      totalToPay: (
-        cartProducts.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.price * currentValue.quantity;
-        }, 0) / 100
-      ).toFixed(2),
-    });
-  }); */
+  req.user
+    .populate('cart.productId')
+    .execPopulate()
+    .then(populatedUser => {
+      const cart = [];
+      populatedUser.cart.forEach(product => {
+        cart.push({
+          _id: product.productId._id,
+          name: product.productId.name,
+          imageUrl: product.productId.imageUrl,
+          description: product.productId.description,
+          price: (product.productId.price / 100).toFixed(2),
+          quantity: product.quantity,
+        });
+      });
+      res.render('shop/cart', {
+        pageTitle: 'Your Cart',
+        path: '/cart',
+        products: cart,
+        totalToPay: (
+          populatedUser.cart.reduce((accumulator, currentValue) => {
+            return (
+              accumulator + currentValue.productId.price * currentValue.quantity
+            );
+          }, 0) / 100
+        ).toFixed(2),
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 const postDeleteProductFromCart = (req, res, next) => {
   const productId = req.body.productId;
-  res.redirect('/cart');
+  req.user.removeFromCart(productId).then(() => {
+    res.redirect('/cart');
+  });
   /* req.user
     .removeFromCart(productId)
     .then(() => {
@@ -49,13 +62,12 @@ const postDeleteProductFromCart = (req, res, next) => {
 
 const postUserCart = (req, res, next) => {
   const productId = req.body.productId;
-  res.redirect('cart');
-  /* req.user
+  req.user
     .addToCart(productId)
     .then(() => {
       res.redirect('cart');
     })
-    .catch(err => console.log(err)); */
+    .catch(err => console.log(err));
 };
 
 const postUserOrders = (req, res, next) => {
