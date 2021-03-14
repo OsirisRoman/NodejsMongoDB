@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Order = require('../models/order');
 
 const getProductList = (req, res, next) => {
   Product.find()
@@ -52,12 +53,6 @@ const postDeleteProductFromCart = (req, res, next) => {
   req.user.removeFromCart(productId).then(() => {
     res.redirect('/cart');
   });
-  /* req.user
-    .removeFromCart(productId)
-    .then(() => {
-      res.redirect('/cart');
-    })
-    .catch(err => console.log(err)); */
 };
 
 const postUserCart = (req, res, next) => {
@@ -71,31 +66,51 @@ const postUserCart = (req, res, next) => {
 };
 
 const postUserOrders = (req, res, next) => {
-  res.redirect('/orders');
-  /* req.user
-    .addOrder()
+  req.user
+    .populate('cart.productId')
+    .execPopulate()
+    .then(populatedUser => {
+      const cart = [];
+      populatedUser.cart.forEach(product => {
+        cart.push({
+          name: product.productId.name,
+          price: (product.productId.price / 100).toFixed(2),
+          quantity: product.quantity,
+        });
+      });
+
+      const order = new Order({
+        products: cart,
+        totalToPay: (
+          populatedUser.cart.reduce((accumulator, currentValue) => {
+            return (
+              accumulator + currentValue.productId.price * currentValue.quantity
+            );
+          }, 0) / 100
+        ).toFixed(2),
+        user: req.user._id,
+      });
+      return order.save();
+    })
+    .then(() => {
+      return req.user.resetCart();
+    })
     .then(() => {
       res.redirect('/orders');
     })
-    .catch(err => console.log(err)); */
+    .catch(err => console.log(err));
 };
 
 const getUserOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    pageTitle: 'Your Orders',
-    path: '/orders',
-    orders: [],
-  });
-  /* req.user.getOrders().then(orders => {
-    orders.forEach(order => {
-      order.totalToPay = (order.totalToPay / 100).toFixed(2);
-    });
-    res.render('shop/orders', {
-      pageTitle: 'Your Orders',
-      path: '/orders',
-      orders,
-    });
-  }); */
+  Order.find()
+    .then(orders => {
+      res.render('shop/orders', {
+        pageTitle: 'Your Orders',
+        path: '/orders',
+        orders: orders,
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 const goToCheckout = (req, res, next) => {

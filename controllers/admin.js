@@ -59,28 +59,6 @@ const postDeleteProduct = (req, res) => {
       res.redirect('/admin/product-list');
     })
     .catch(err => console.log(err));
-  /* const cartProductIndex = req.user.cart.findIndex(cartProduct => {
-    //cartProduct.productId is treated as a string but
-    //it is not a string
-    return cartProduct.productId.toString() === productId;
-  });
-  if (cartProductIndex >= 0) {
-    req.user
-      .removeFromCart(productId)
-      .then(() => {
-        return Product.deleteById(productId);
-      })
-      .then(() => {
-        res.redirect('/admin/product-list');
-      })
-      .catch(err => console.log(err));
-  } else {
-    Product.deleteById(productId)
-      .then(() => {
-        res.redirect('/admin/product-list');
-      })
-      .catch(err => console.log(err));
-  } */
 };
 
 const getProductList = (req, res, next) => {
