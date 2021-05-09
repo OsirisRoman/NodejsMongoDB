@@ -1,5 +1,5 @@
-const Product = require('../models/product');
-const Order = require('../models/order');
+const Product = require("../models/product");
+const Order = require("../models/order");
 
 const getProductList = (req, res, next) => {
   Product.find()
@@ -7,10 +7,10 @@ const getProductList = (req, res, next) => {
       products.forEach(product => {
         product.price = (product.price / 100).toFixed(2);
       });
-      res.render('shop/product-list', {
+      res.render("shop/product-list", {
         productList: products,
-        pageTitle: 'Shop',
-        path: '/product-list',
+        pageTitle: "Shop",
+        path: "/product-list",
       });
     })
     .catch(err => console.log(err));
@@ -18,7 +18,7 @@ const getProductList = (req, res, next) => {
 
 const getUserCart = (req, res, next) => {
   req.user
-    .populate('cart.productId')
+    .populate("cart.productId")
     .execPopulate()
     .then(populatedUser => {
       const cart = [];
@@ -32,9 +32,9 @@ const getUserCart = (req, res, next) => {
           quantity: product.quantity,
         });
       });
-      res.render('shop/cart', {
-        pageTitle: 'Your Cart',
-        path: '/cart',
+      res.render("shop/cart", {
+        pageTitle: "Your Cart",
+        path: "/cart",
         products: cart,
         totalToPay: (
           populatedUser.cart.reduce((accumulator, currentValue) => {
@@ -51,7 +51,7 @@ const getUserCart = (req, res, next) => {
 const postDeleteProductFromCart = (req, res, next) => {
   const productId = req.body.productId;
   req.user.removeFromCart(productId).then(() => {
-    res.redirect('/cart');
+    res.redirect("/cart");
   });
 };
 
@@ -60,14 +60,14 @@ const postUserCart = (req, res, next) => {
   req.user
     .addToCart(productId)
     .then(() => {
-      res.redirect('cart');
+      res.redirect("cart");
     })
     .catch(err => console.log(err));
 };
 
 const postUserOrders = (req, res, next) => {
   req.user
-    .populate('cart.productId')
+    .populate("cart.productId")
     .execPopulate()
     .then(populatedUser => {
       const cart = [];
@@ -96,7 +96,7 @@ const postUserOrders = (req, res, next) => {
       return req.user.resetCart();
     })
     .then(() => {
-      res.redirect('/orders');
+      res.redirect("/orders");
     })
     .catch(err => console.log(err));
 };
@@ -104,9 +104,9 @@ const postUserOrders = (req, res, next) => {
 const getUserOrders = (req, res, next) => {
   Order.find()
     .then(orders => {
-      res.render('shop/orders', {
-        pageTitle: 'Your Orders',
-        path: '/orders',
+      res.render("shop/orders", {
+        pageTitle: "Your Orders",
+        path: "/orders",
         orders: orders,
       });
     })
@@ -114,16 +114,16 @@ const getUserOrders = (req, res, next) => {
 };
 
 const goToCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    pageTitle: 'User Cart',
-    path: '/checkout',
+  res.render("shop/checkout", {
+    pageTitle: "User Cart",
+    path: "/checkout",
   });
 };
 
 const goToHome = (req, res, next) => {
-  res.render('shop/index', {
-    pageTitle: 'User Landing Page',
-    path: '/',
+  res.render("shop/index", {
+    pageTitle: "User Landing Page",
+    path: "/",
   });
 };
 
@@ -132,10 +132,10 @@ const getProductDetails = (req, res, next) => {
   Product.findById(productId)
     .then(product => {
       product.price = (product.price / 100).toFixed(2);
-      res.render('shop/product-details', {
+      res.render("shop/product-details", {
         product: product,
         pageTitle: product.name,
-        path: '/product-list',
+        path: "/product-list",
       });
     })
     .catch(err => console.log(err));
